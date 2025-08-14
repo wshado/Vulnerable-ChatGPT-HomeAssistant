@@ -1,0 +1,9 @@
+# Home Assistant Configuration
+HA_URL=http://your-ha-ip:8123
+HA_TOKEN=your-home-assistant-long-lived-access-token
+
+# OpenAI Configuration
+OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_MODEL=gpt-3.5-turbo
+
+# Copy this file to .env and fill in your actual values
