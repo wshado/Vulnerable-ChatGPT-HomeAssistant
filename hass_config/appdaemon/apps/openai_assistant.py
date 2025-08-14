@@ -1,13 +1,13 @@
-#qwen-assistant.py
+#openai-assistant.py
 import appdaemon.plugins.hass.hassapi as hass
-from ollama import Client
+import openai
 import json
 import pickle
 import os
 import requests
 import re
 
-class QwenAssistant(hass.Hass):
+class OpenAIAssistant(hass.Hass):
 
     def extract_dates(self, text):
         # Example: "from 2025-07-08T00:00:00Z to 2025-07-09T00:00:00Z"
@@ -41,11 +41,11 @@ class QwenAssistant(hass.Hass):
 
     def initialize(self):
         self.listen_event(self.on_utterance, "conversation_utterance")
-        self.ollama = Client(host=self.args["qwen_url"])
+        self.openai_client = openai.OpenAI(api_key=self.args["openai_api_key"])
         context_prompt = { e: self.get_state(e) for e in self.args["context_entities"] }
         context_str = "\n".join([f"{k}: {v}" for k, v in context_prompt.items()])
 
-        self.history_path = "/home/cciaz/Desktop/HADock/hass_config/appdaemon/logs/qwen_history.pkl"
+        self.history_path = "/home/cciaz/Desktop/HADock/hass_config/appdaemon/logs/openai_history.pkl"
 
         if os.path.exists(self.history_path):
             try:
@@ -99,7 +99,7 @@ class QwenAssistant(hass.Hass):
                 "content": "You are a multi-tool home assist, browser assist, and helpful acolyte. Provide clear, brief, helpful, and direct answers.  Use the following context to answer:\n" + context_str
             }
         )
-        # Build conversation messages for Qwen
+        # Build conversation messages for OpenAI
 
         self.conversation_history.append({
                 "role": "user",
@@ -109,38 +109,43 @@ class QwenAssistant(hass.Hass):
         
 
         try:
-            # Call local Qwen model using Ollama Python client
-            response = self.ollama.chat(model=self.args["qwen_model"], messages=self.conversation_history)
-            speech = response["message"]["content"]
+            # Call OpenAI API
+            response = self.openai_client.chat.completions.create(
+                model=self.args["openai_model"],
+                messages=self.conversation_history,
+                max_tokens=1000,
+                temperature=0.7
+            )
+            speech = response.choices[0].message.content
         except Exception as e:
-            speech = f"Error contacting Qwen: {e}"
+            speech = f"Error contacting OpenAI: {e}"
 
         lower_speech = speech.lower()
 
         # 🔥 FAN control
         if "turning on the fan" in lower_speech:
             self.call_service("switch/turn_on", entity_id="switch.smarthome_node_dc_motor_fan")
-            self.log("Fan turned ON via Qwen", level="INFO")
+            self.log("Fan turned ON via OpenAI", level="INFO")
         elif "turning off the fan" in lower_speech:
             self.call_service("switch/turn_off", entity_id="switch.smarthome_node_dc_motor_fan")
-            self.log("Fan turned OFF via Qwen", level="INFO")
+            self.log("Fan turned OFF via OpenAI", level="INFO")
 
         # 💡 LIGHT control
         if "turning on the light" in lower_speech:
             self.call_service("switch/turn_on", entity_id="switch.smarthome_node_smart_home_light")
-            self.log("Light turned ON via Qwen", level="INFO")
+            self.log("Light turned ON via OpenAI", level="INFO")
         elif "turning off the light" in lower_speech:
             self.call_service("switch/turn_off", entity_id="switch.smarthome_node_smart_home_light")
-            self.log("Light turned OFF via Qwen", level="INFO")
+            self.log("Light turned OFF via OpenAI", level="INFO")
 
         # 📄 RFID list clearing
         if "clear rfid list" in lower_speech or "reset rfid list" in lower_speech:
             self.call_service("input_text/set_value", entity_id="input_text.input_text_rfid_tag_list", value="")
-            self.log("RFID tag list cleared via Qwen", level="INFO")
+            self.log("RFID tag list cleared via OpenAI", level="INFO")
 
         # 🔊 Send response back to HA conversation UI
         self.log(f"▶ conversation_response with context {conv_context}: {speech}", level="INFO")
-        self.log_to_file(f"Qwen Response: {speech}")
+        self.log_to_file(f"OpenAI Response: {speech}")
         self.fire_event("conversation_response", text=speech, context=conv_context)
 
 
@@ -157,6 +162,6 @@ class QwenAssistant(hass.Hass):
             self.log(f"⚠️ Failed to save pickle history: {e}", level="ERROR")
 
     def log_to_file(self, message):
-        log_path = "/home/cciaz/Desktop/HADock/hass_config/appdaemon/logs/qwen_assistant.log"  # customize path
+        log_path = "/home/cciaz/Desktop/HADock/hass_config/appdaemon/logs/openai_assistant.log"  # customize path
         with open(log_path, "a") as f:
             f.write(f"{message}\n")

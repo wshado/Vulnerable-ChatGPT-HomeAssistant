@@ -4,14 +4,13 @@ After=network.target
 
 [Service]
 Type=simple
-User=${USER}
+User=cciaz
 # Point WorkingDirectory at the project directory
-WorkingDirectory=${PWD}
+WorkingDirectory=/home/cciaz/Desktop/HADock
 # Use the startup script that loads environment variables
-ExecStart=${PWD}/start_appdaemon.sh
+ExecStart=/home/cciaz/Desktop/HADock/start_appdaemon.sh
 Restart=on-failure
 RestartSec=5s
-Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
 [Install]
 WantedBy=multi-user.target

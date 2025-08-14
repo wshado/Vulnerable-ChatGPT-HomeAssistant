@@ -112,7 +112,7 @@ class EventListener(QObject):
 class ChatWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Home Assistant Qwen Chat")
+        self.setWindowTitle("Home Assistant OpenAI Chat")
         self.resize(400, 600)
 
         self.chat_area = QTextEdit(self)
@@ -139,7 +139,7 @@ class ChatWindow(QMainWindow):
         self.listener.start()
 
     def display_bot_message(self, text):
-        self.chat_area.append(f"<b>Qwen:</b> {text}")
+        self.chat_area.append(f"<b>OpenAI:</b> {text}")
 
     def send_message(self):
         message = self.input_line.text().strip()

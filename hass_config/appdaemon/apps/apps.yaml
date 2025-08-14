@@ -1,9 +1,9 @@
 #apps.yaml
-qwen_assistant:
-  module: qwen_assistant
-  class: QwenAssistant
-  qwen_url: !env_var QWEN_URL
-  qwen_model: !env_var QWEN_MODEL
+openai_assistant:
+  module: openai_assistant
+  class: OpenAIAssistant
+  openai_api_key: !env_var OPENAI_API_KEY
+  openai_model: !env_var OPENAI_MODEL
   ha_url: !env_var HA_URL
   ha_token: !env_var HA_TOKEN
   context_entities:

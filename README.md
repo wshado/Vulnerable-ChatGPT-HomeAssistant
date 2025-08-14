@@ -1,11 +1,11 @@
-# HADock - Home Assistant Docker Setup with Qwen Integration
+# HADock - Home Assistant Docker Setup with OpenAI Integration
 
-A complete Home Assistant setup running in Docker with Qwen AI conversation integration via AppDaemon and custom components.
+A complete Home Assistant setup running in Docker with OpenAI AI conversation integration via AppDaemon and custom components.
 
 ## Features
 
 - 🏠 **Home Assistant Core** - Running in Docker container
-- 🤖 **Qwen AI Integration** - Both AppDaemon and custom conversation agent
+- 🤖 **OpenAI Integration** - Both AppDaemon and custom conversation agent
 - 📱 **Smart Home Devices** - Temperature, humidity, motion sensors, LED, buzzer, fan, lights
 - 🔒 **Secure Configuration** - Environment variables for sensitive data
 - 📊 **AppDaemon** - Advanced automation and AI assistant
@@ -32,9 +32,9 @@ Edit `.env` file with your configuration:
 HA_URL=http://your-ha-ip:8123
 HA_TOKEN=your-home-assistant-long-lived-access-token
 
-# Qwen/Ollama Configuration  
-QWEN_URL=http://localhost:11434
-QWEN_MODEL=qwen2.5:1.5b-instruct-q4_0
+# OpenAI Configuration  
+OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_MODEL=gpt-3.5-turbo
 ```
 
 ### 3. Start Services
@@ -47,15 +47,11 @@ docker-compose up -d
 docker logs homeassistant
 ```
 
-### 4. Setup Ollama (if using local Qwen)
+### 4. Setup OpenAI API
 
-```bash
-# Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Pull Qwen model
-ollama pull qwen2.5:1.5b-instruct-q4_0
-```
+1. Get your OpenAI API key from https://platform.openai.com/api-keys
+2. Add it to your `.env` file as `OPENAI_API_KEY=your-key-here`
+3. Choose your preferred model (gpt-3.5-turbo, gpt-4, etc.)
 
 ## Project Structure
 
@@ -75,7 +71,7 @@ HADock/
     │   └── apps/
     │       └── apps.yaml
     └── custom_components/
-        └── qwen_conversation/
+        └── openai_conversation/
             ├── __init__.py
             ├── manifest.json
             └── conversation.py
@@ -88,7 +84,7 @@ HADock/
 - Web interface at `http://your-ip:8123`
 - Manages all smart home devices
 
-### Qwen Integration (Dual Setup)
+### OpenAI Integration (Dual Setup)
 1. **Custom Conversation Agent** - Direct integration with HA chat interface
 2. **AppDaemon Assistant** - Advanced automation and context-aware responses
 
@@ -130,9 +126,10 @@ If HA enters recovery mode:
 2. Verify `.env` file exists and has correct values
 3. Ensure custom component files are present
 
-### Qwen Connection Issues
-1. Verify Ollama is running: `ollama list`
-2. Check model is available: `ollama pull qwen2.5:1.5b-instruct-q4_0`
+### OpenAI Connection Issues
+1. Verify API key is valid and has credits
+2. Check model availability in your OpenAI account
+3. Ensure API key has proper permissions
 3. Test API: `curl http://localhost:11434/api/version`
 
 ### Environment Variables Not Loading
@@ -142,8 +139,8 @@ If HA enters recovery mode:
 
 ## Development
 
-To modify the Qwen integration:
-1. Edit files in `hass_config/custom_components/qwen_conversation/`
+To modify the OpenAI integration:
+1. Edit files in `hass_config/custom_components/openai_conversation/`
 2. Restart Home Assistant: `docker-compose restart`
 3. Check logs for errors: `docker logs homeassistant`
 

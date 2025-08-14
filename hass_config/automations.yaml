@@ -1,0 +1,18 @@
+#automations.yaml
+alias: Append Every RFID UID to List
+trigger:
+  - platform: event
+    event_type: esphome.rfid_scanned
+action:
+  - service: input_text.set_value
+    data:
+      entity_id: input_text.input_text_rfid_tag_list
+      value: >-
+        {% set new = trigger.event.data.uid %}
+        {% set old = states('input_text.input_text_rfid_tag_list') %}
+        {% if old == 'unknown' or old == '' %}
+          {{ new }}
+        {% else %}
+          {{ old }},{{ new }}
+        {% endif %}
+mode: single

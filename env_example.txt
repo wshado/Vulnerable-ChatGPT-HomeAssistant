@@ -1,9 +1,0 @@
-# Home Assistant Configuration
-HA_URL=http://your-ha-ip:8123
-HA_TOKEN=your-home-assistant-long-lived-access-token
-
-# Qwen/Ollama Configuration
-QWEN_URL=http://localhost:11434
-QWEN_MODEL=qwen2.5:0.5b
-
-# Copy this file to .env and fill in your actual values

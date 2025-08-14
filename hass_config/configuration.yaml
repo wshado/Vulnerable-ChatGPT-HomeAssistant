@@ -1,0 +1,46 @@
+# ——————————————————————————————————————————
+# Home Assistant Core Configuration
+# ——————————————————————————————————————————
+
+default_config:
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+
+# Enable the Assist chat pipeline:
+conversation:
+
+# Configure entities for voice control
+homeassistant:
+  customize:
+    switch.smarthome_node_dc_motor_fan:
+      friendly_name: "Fan"
+      aliases:
+        - "DC Motor Fan"
+        - "Motor Fan"
+        - "Cooling Fan"
+    switch.smarthome_node_smart_home_light:
+      friendly_name: "Light"
+      aliases:
+        - "Smart Light"
+        - "Home Light"
+        - "Main Light"
+
+# Enable intent script for device control
+intent_script:
+  TurnOnIntent:
+    speech:
+      text: "Turning on {{ states.switch[item].attributes.friendly_name }}"
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: "switch.{{ item }}"
+  TurnOffIntent:
+    speech:
+      text: "Turning off {{ states.switch[item].attributes.friendly_name }}"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: "switch.{{ item }}"
